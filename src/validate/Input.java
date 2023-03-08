@@ -6,17 +6,16 @@ package validate;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.TreeMap;
 import java.util.regex.Pattern;
-import object.Pet;
+import models.Category;
 
 public class Input {
 
     Scanner sc = new Scanner(System.in).useDelimiter("\n");
     boolean wrong;
     String customerIDRegex = "[C]{1}\\d{3}";
-    String orderIDRegex = "[D]{1}\\d{3}";
 
     // String can be empty
     public String string(String message) {
@@ -61,114 +60,80 @@ public class Input {
         return 0;
     }
 
-  
-
-    public String customerPhone(String message) {
-        String phoneRegex = "\\d{10,12}";
+    public int number(String message, int max) {
+        String numberRegex = "^\\d+$";
         do {
             wrong = true;
             System.out.print(message);
-            String phone = sc.next().trim().replaceAll(",", "|");
+            String choice = sc.next().trim().replaceAll(",", "|");
+            int number;
 
-            if (Pattern.matches(phoneRegex, phone)) {
-                return phone;
+            try {
+                number = Integer.parseInt(choice);
+
+                if (number > max) {
+                    System.err.println("Invalid! The number must smaller or equal to " + max);
+                    continue;
+                }
+
+                if (Pattern.matches(numberRegex, choice)) {
+                    return Integer.parseInt(choice);
+                }
+
+                System.err.println("Please input a number!");
+            } catch (NumberFormatException e) {
+                System.err.println("Please input a number!");
             }
 
-            System.err.println("The phone is a number string that has a length from 10 to 12");
         } while (wrong);
 
-        return "";
+        return 0;
     }
 
-    public String updateCustomerPhone(String message, String prevValue) {
-        String phoneRegex = "\\d{10,12}";
+    public String id(String message, TreeMap PetMap) {
         do {
-            wrong = true;
-            System.out.print(message);
-            String phone = sc.next().trim().replaceAll(",", "|");
-
-            if (phone.isBlank()) {
-                return prevValue;
-            }
-
-            if (Pattern.matches(phoneRegex, phone)) {
-                return phone;
-            }
-
-            System.err.println("The phone is a number string that has a length from 10 to 12");
-        } while (wrong);
-
-        return "";
-    }
-
-    public String orderID(String message, ArrayList<Pet> orderList) {
-        do {
-            wrong = false;
             System.out.print(message);
             String id = sc.next().trim().replaceAll(",", "|");
 
-            if (!Pattern.matches(orderIDRegex, id)) {
-                wrong = true;
-                System.err.println("Order's Id has pattern 'Dxxx', with xxx is three digits");
-                continue;
-            }
-
-            for (Pet order : orderList) {
-                if (order.getOrderID().equals(id)) {
-                    wrong = true;
-                    System.err.println("Order's id is not allowed to duplicate");
-                    break;
-                }
-            }
+            wrong = PetMap.containsKey(id);
 
             if (!wrong) {
                 return id;
             }
-        } while (wrong);
 
+            System.err.println("The id fields must be unique");
+        } while (wrong);
         return "";
     }
 
-    public String findOrderId(ArrayList<Pet> orderList) {
+    public Category category(String message) {
         do {
-            wrong = true;
-            for (int i = 0; i < orderList.size(); i++) {
-                System.out.println(i + ". " + orderList.get(i));
+            System.out.println(message);
+            int i = 1;
+            for (Category category : Category.values()) {
+                System.out.println(Integer.toString(i) + ". " + category);
+                i++;
             }
-            System.out.println("------------------------------------------");
-
-            int choice = number("Your choice: ");
-            if (choice < orderList.size()) {
-                return orderList.get(choice).getOrderID();
-            }
-
-            System.err.println("This customer does not exist");
-        } while (wrong);
-
-        return "";
-    }
-    
-    public int findOrderIndexByID(String message, ArrayList<Pet> orderList) {
-        do {
-            wrong = false;
-            System.out.print(message);
-            String id = sc.next().trim().replaceAll(",", "|");
-
-            if (!Pattern.matches(orderIDRegex, id)) {
-                wrong = true;
-                System.err.println("Order's Id has pattern 'Dxxx', with xxx is three digits");
-                continue;
-            }
-
-            for (int i = 0; i < orderList.size(); i++) {
-                if (orderList.get(i).getOrderID().equals(id)) {
-                    return i;
+            int choice = number("Your choice: ", 3);
+            switch (choice) {
+                case 1 -> {
+                    return Category.Cat;
+                }
+                case 2 -> {
+                    return Category.Dog;
+                }
+                case 3 -> {
+                    return Category.Parrot;
+                }
+                default -> {
+                    System.err.println("Invalid! Please try again");
+                    wrong = true;
                 }
             }
-        } while (wrong);
-        return -1;
-    }
 
+        } while (wrong);
+        return null;
+    }
 
     public boolean yesNo() {
         do {

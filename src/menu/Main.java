@@ -4,7 +4,8 @@
  */
 package menu;
 
-import object.PetMap;
+import models.OrderMap;
+import models.PetMap;
 import validate.Input;
 
 /**
@@ -14,7 +15,8 @@ import validate.Input;
 public class Main {
 
     static Input input = new Input();
-    static PetMap orderList = new PetMap();
+    static PetMap petMap = new PetMap().readFIle();
+    static OrderMap orderMap = new OrderMap().readFile();
 
     public static void main(String[] args) {
         boolean isContinue = true;
@@ -37,8 +39,21 @@ public class Main {
 
             int choice = input.number("Your choice: ");
             switch (choice) {
-                case 1 ->
-                    System.out.println("Hello");
+                case 1 -> petMap.add();
+                case 2 -> petMap.search();
+                case 3 -> petMap.saveToFile();
+                case 4 -> petMap.delete();
+                case 5 -> orderMap.add(petMap);
+                case 6 -> orderMap.print();
+                case 7 -> orderMap.sort();
+                case 8 -> {
+                    petMap.saveToFile();
+                    orderMap.saveToFile();
+                }
+                case 9 -> {
+                    petMap.print();
+                    orderMap.print();
+                }
                 default -> {
                     System.out.println("Good bye! Have a nice day!");
                     isContinue = false;
